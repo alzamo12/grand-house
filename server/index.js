@@ -84,9 +84,17 @@ async function run() {
         })
 
         // rooms api
-        app.get('/rooms', async(req, res) => {
+        app.get('/rooms', async (req, res) => {
             const rooms = await roomsCollection.find().toArray();
             res.send(rooms)
+        })
+
+        // get single room 
+        app.get('/rooms/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const room = await roomsCollection.findOne(query);
+            res.send(room)
         })
 
 

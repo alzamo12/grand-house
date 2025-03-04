@@ -3,6 +3,8 @@ import RoomReservation from '../../components/RoomDetails/RoomReservation'
 import Heading from '../../components/shared/Heading/Heading'
 import { useParams } from 'react-router'
 import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import useAxiosSecure from '../../hooks/useAxiosSecure'
 
 // single room object (Fake Data)
 const room = {
@@ -28,16 +30,25 @@ const room = {
 const RoomDetails = () => {
 
     const [data, setData] = useState([]);
-    const params = useParams()
+    const params = useParams();
+    const axiosSecure = useAxiosSecure();
 
-    useEffect( () => {
-        fetch(`/rooms.json`)
-        .then(res => res.json())
-        .then(data => setData(data))
-    },[])
+    const {data:roomData = []} = useQuery({
+        queryKey: ['roomData'],
+        queryFn: async() => {
+            const res = await axiosSecure.get(`http://localhost:5000/rooms/${params.id}`);
+            return res.data
+        }
+    })
 
-    const roomData = data.filter(index => index._id === params.id)[0];
-    console.log(roomData)
+    // useEffect( () => {
+    //     fetch(`http://localhost:5000/rooms/${params.id}`)
+    //     .then(res => res.json())
+    //     .then(data => setData(data))
+    // },[])
+
+    // const roomData = data.filter(index => index._id === params.id)[0];
+    // console.log(roomData)
 
     return (
         <Container>
