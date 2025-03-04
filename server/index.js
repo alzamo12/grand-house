@@ -49,6 +49,10 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
+
+        // collections
+        const roomsCollection = client.db('grandHouse').collection("rooms");
+
         // auth related api
         app.post('/jwt', async (req, res) => {
             const user = req.body;
@@ -77,6 +81,12 @@ async function run() {
             catch (err) {
                 res.status(500).send(err)
             }
+        })
+
+        // rooms api
+        app.get('/rooms', async(req, res) => {
+            const rooms = await roomsCollection.find().toArray();
+            res.send(rooms)
         })
 
 
