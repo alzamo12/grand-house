@@ -4,11 +4,14 @@ import Rooms from "../../components/Home/Rooms";
 const Home = () => {
     return (
         <div>
-            {/* categories section */}
-           <Categories/>
+            {/* give a title */}
+            <title>Grand House &nbsp;| |&nbsp; Home</title>
 
-           {/* rooms */}
-           <Rooms/>
+            {/* categories section */}
+            <Categories />
+
+            {/* rooms */}
+            <Rooms />
         </div>
     );
 };
