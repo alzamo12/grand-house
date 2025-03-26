@@ -2,20 +2,8 @@ import LoadingSpinner from '../shared/LoadingSpinner/LoadingSpinner';
 import Container from '../shared/Container/Container';
 import Heading from '../shared/Heading/Heading';
 import Card from './Card';
-import { useQuery } from '@tanstack/react-query';
-import useAxiosSecure from '../../hooks/useAxiosSecure';
 
-const Rooms = () => {
-  const axiosSecure = useAxiosSecure();
-
-  // get data of all the rooms
-  const { data: rooms = [], isLoading } = useQuery({
-    queryKey: ['room'],
-    queryFn: async () => {
-      const res = await axiosSecure.get('/rooms');
-      return res.data
-    }
-  });
+const Rooms = ({rooms, isLoading}) => {
 
   // show spinner if data is loading 
   if (isLoading) {
@@ -28,7 +16,7 @@ const Rooms = () => {
         // show cards if data is found
         (
           <div className='pt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8'>
-            {rooms.map(room => (
+            {rooms?.map(room => (
               <Card key={room._id} room={room} />
             ))}
           </div>

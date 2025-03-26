@@ -1,18 +1,32 @@
 import PropTypes from 'prop-types'
+import queryString from 'query-string';
+import { useNavigate } from 'react-router';
 
 const CategoryBox = ({ label, icon: Icon }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    let currentQuery = {category: label};
+    const url = queryString.stringifyUrl({
+      url: '/',
+      query: currentQuery
+    });
+    navigate(url)
+  }
+
   return (
     <div
       className={`flex 
-  flex-col 
-  items-center 
-  justify-center 
-  gap-2
-  p-3
-  border-b-2
-  hover:text-neutral-800
-  transition
-  cursor-pointer`}
+                flex-col 
+                items-center 
+                justify-center 
+                gap-2
+                p-3
+                border-b-2
+                hover:text-neutral-800
+                transition
+                cursor-pointer`}
+      onClick={handleClick}
     >
       <Icon size={26} />
       <div className='text-sm font-medium'>{label}</div>

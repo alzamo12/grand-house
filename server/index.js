@@ -135,7 +135,8 @@ async function run() {
 
         // get all rooms from db
         app.get('/rooms', async (req, res) => {
-            const rooms = await roomCollection.find().toArray();
+            const {category} = req.query;
+            const rooms = await roomCollection.find(category ? {category} : {}).toArray();
             res.send(rooms)
         })
 

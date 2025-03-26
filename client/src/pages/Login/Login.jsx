@@ -1,12 +1,15 @@
-import { data, Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { FcGoogle } from 'react-icons/fc'
 import useAuth from '../../hooks/useAuth'
 import { useForm } from "react-hook-form"
+import LoadingSpinner from '../../components/shared/LoadingSpinner/LoadingSpinner'
+import Swal from 'sweetalert2'
 
 
 const Login = () => {
 
-  const { signIn, signInWithGoogle } = useAuth();
+  const { signIn, signInWithGoogle, loading } = useAuth();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -16,7 +19,14 @@ const Login = () => {
 
   const onSubmit = (data) => {
     signIn(data.email, data.password)
-      .then(result => console.log(result.user))
+      .then(() => {
+        navigate('/')
+        Swal.fire({
+          title: "You've Login Successfully to your account",
+          icon: "success",
+          draggable: true
+        });
+      })
       .catch(error => console.log(error))
   };
 
@@ -28,7 +38,9 @@ const Login = () => {
       .catch(error => {
         console.log(error)
       })
-  }
+  };
+
+  if (loading) return <LoadingSpinner />
 
   return (
     <div className='flex justify-center items-center min-h-screen'>
@@ -62,7 +74,7 @@ const Login = () => {
                 data-temp-mail-org='0'
               />
               {/* email error0 */}
-              {errors.email && <span className='text-red-600'>This field is required</span>}
+              {errors.email && <span className='text-red-600 text-xs'>This field is required</span>}
             </div>
             {/* password */}
             <div>
@@ -81,7 +93,7 @@ const Login = () => {
                 className='w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-rose-500 bg-gray-200 text-gray-900'
               />
               {/* password error */}
-              {errors.password && <span className='text-red-600'>This field is required</span>}
+              {errors.password && <span className='text-red-600 text-xs'>This field is required</span>}
 
             </div>
           </div>
@@ -89,7 +101,7 @@ const Login = () => {
           <div>
             <button
               type='submit'
-              className='bg-rose-500 w-full rounded-md py-3 text-white'
+              className='bg-rose-500 w-full rounded-md py-3 text-white cursor-pointer'
             >
               Continue
             </button>

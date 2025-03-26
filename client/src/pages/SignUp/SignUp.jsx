@@ -5,10 +5,11 @@ import useAuth from '../../hooks/useAuth';
 import useAxiosSecure from '../../hooks/useAxiosSecure'
 import { useState } from 'react';
 import Swal from 'sweetalert2'
+import LoadingSpinner from '../../components/shared/LoadingSpinner/LoadingSpinner';
 
 const SignUp = () => {
 
-    const { createUser, updateUserProfile, signInWithGoogle, createGuestAccount } = useAuth();
+    const { createUser, updateUserProfile, signInWithGoogle, createGuestAccount, loading } = useAuth();
     const [imageUrl, setImageUrl] = useState("");
     const {
         register,
@@ -19,97 +20,100 @@ const SignUp = () => {
     const navigate = useNavigate();
 
     const onSubmit = async (data) => {
-        createUser(data.email, data.password)
-            .then(result => {
-                // update user with name and image generated from image bb
-                updateUserProfile(data.name, imageUrl)
-                    .then(async () => {
-                        try {
-                            // step-1: save user in database with valid information
-                            const user = {
-                                name: data.name,
-                                email: data.email,
-                                password: data.password,
-                                role: "Guest"
-                            };
-                            const res = await axiosSecure.post('/users', user);
+            createUser(data.email, data.password)
+                .then(() => {
+                    // update user with name and image generated from image bb
+                        updateUserProfile(data.name, imageUrl)
+                            .then(async () => {
+                                try {
+                                    // step-1: save user in database with valid information
+                                    const user = {
+                                        name: data.name,
+                                        email: data.email,
+                                        password: data.password,
+                                        role: "Guest"
+                                    };
+                                    const res = await axiosSecure.post('/users', user);
 
-                            // step-2: perform task if user saved successfully
-                            if (res.data.insertedId) {
-                                navigate('/')
-                                Swal.fire({
-                                    title: "You have log in successfully",
-                                    icon: "success",
-                                    draggable: true
-                                });
+                                    // step-2: perform task if user saved successfully
+                                    if (res.data.insertedId) {
+                                        navigate('/')
+                                        Swal.fire({
+                                            title: "You have log in successfully",
+                                            icon: "success",
+                                            draggable: true
+                                        });
 
-                                // step-3: send custom verification email
-                                const res = await axiosSecure.post('/send-verification-email', user)
-                                if (res.status === 200) {
-                                    Swal.fire({
-                                        title: "Please Verify Your Email",
-                                        text: "You won't be able reserve anything without verifying your email address",
-                                        icon: "warning",
-                                        showCancelButton: true,
-                                        confirmButtonColor: "#3085d6",
-                                        cancelButtonColor: "#d33",
-                                        confirmButtonText: "Go to Gmail"
-                                    }).then((result) => {
-                                        if (result.isConfirmed) {
-                                            window.location.href = "https://mail.google.com/"
+                                        // step-3: send custom verification email
+                                        const res = await axiosSecure.post('/send-verification-email', user)
+                                        if (res.status === 200) {
+                                            Swal.fire({
+                                                title: "Please Verify Your Email",
+                                                text: "You won't be able reserve anything without verifying your email address",
+                                                icon: "warning",
+                                                showCancelButton: true,
+                                                confirmButtonColor: "#3085d6",
+                                                cancelButtonColor: "#d33",
+                                                confirmButtonText: "Go to Gmail"
+                                            }).then((result) => {
+                                                if (result.isConfirmed) {
+                                                    window.location.href = "https://mail.google.com/"
+                                                }
+                                            });
                                         }
-                                    });
+                                    }
                                 }
-                            }
-                        }
-                        catch (error) {
-                            console.log(error)
-                        }
+                                catch (error) {
+                                    console.log(error)
+                                }
 
                     })
-            })
-            .catch(error => console.log(error))
+                })
+                .catch(error => console.log(error))
+
     };
+
+    const generateImageURL = (file) => {
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+            // The result is a data URL; we remove the prefix to get the pure base64 string
+            const base64String = reader.result.replace(/^data:image\/[a-z]+;base64,/, "");
+
+            // Prepare form data
+            const formData = new FormData();
+            formData.append("image", base64String);
+
+            // imagebb api key
+            const apiKey = import.meta.env.VITE_imagebb_key;
+            try {
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+                    method: "POST",
+                    body: formData,
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    console.error("Upload failed:", data);
+                    return;
+                }
+
+                // The URL of the uploaded image can be found at data.data.url
+                const imagebb = data.data.url;
+                setImageUrl(imagebb)
+                // You can now use imageUrl as your user's photo URL
+            } catch (error) {
+                console.error("Error uploading image:", error);
+            }
+        };
+        reader.readAsDataURL(file);
+    }
 
     // transfer file to image url via image bb
     const handleImage = (e) => {
         try {
-            // document.getElementById("image").addEventListener("change", async (e) => {
             const file = e.target.files[0];
-
-            // imagebb
-            const reader = new FileReader();
-            reader.onloadend = async () => {
-                // The result is a data URL; we remove the prefix to get the pure base64 string
-                const base64String = reader.result.replace(/^data:image\/[a-z]+;base64,/, "");
-
-                // Prepare form data
-                const formData = new FormData();
-                formData.append("image", base64String);
-
-                // Replace with your ImgBB API key
-                const apiKey = import.meta.env.VITE_imagebb_key;
-                try {
-                    const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-                        method: "POST",
-                        body: formData,
-                    });
-
-                    const data = await response.json();
-                    if (!response.ok) {
-                        console.error("Upload failed:", data);
-                        return;
-                    }
-
-                    // The URL of the uploaded image can be found at data.data.url
-                    const imagebb = data.data.url;
-                    setImageUrl(imagebb)
-                    // You can now use imageUrl as your user's photo URL
-                } catch (error) {
-                    console.error("Error uploading image:", error);
-                }
-            };
-            reader.readAsDataURL(file);
+            // console.log(file)
+            generateImageURL(file)
         }
         catch (error) {
             console.log(error)
@@ -118,7 +122,7 @@ const SignUp = () => {
 
     const handleSocialLogin = () => {
         signInWithGoogle()
-            .then(result => {
+            .then(() => {
                 navigate('/')
                 Swal.fire({
                     title: "You have log in successfully",
@@ -134,7 +138,7 @@ const SignUp = () => {
     // singIn anonymously
     const handleGuestLogin = () => {
         createGuestAccount()
-            .then(result => {
+            .then(() => {
                 navigate('/')
                 Swal.fire({
                     title: "You have log in successfully",
@@ -145,7 +149,9 @@ const SignUp = () => {
             .catch(error => {
                 console.error(error)
             })
-    }
+    };
+
+    if (loading) return <LoadingSpinner />
 
     return (
         <div className='flex justify-center items-center min-h-screen'>
@@ -177,7 +183,7 @@ const SignUp = () => {
                                 data-temp-mail-org='0'
                             /> <br />
                             {/* name error */}
-                            {errors.name && <span className='text-red-600'>This field is required</span>}
+                            {errors.name && <span className='text-red-600 text-xs'>This field is required</span>}
                         </div>
                         {/* file input */}
                         <div>
@@ -192,9 +198,9 @@ const SignUp = () => {
                                 onChange={handleImage}
                                 // onChange={handleFileChange}
                                 accept='image/*'
-                            />
+                            /> <br />
                             {/* file error */}
-                            {errors.file && <span className='text-red-600'>This field is required</span>}
+                            {errors.file && <span className='text-red-600 text-xs'>This field is required</span>}
                         </div>
                         {/* email input */}
                         <div>
@@ -211,7 +217,7 @@ const SignUp = () => {
                                 data-temp-mail-org='0'
                             />
                             {/* email error */}
-                            {errors.email && <span className='text-red-600'>This field is required</span>}
+                            {errors.email && <span className='text-red-600 text-xs'>This field is required</span>}
                         </div>
                         {/* password input */}
                         <div>
@@ -230,14 +236,14 @@ const SignUp = () => {
                                 className='w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-rose-500 bg-gray-200 text-gray-900'
                             />
                             {/* password error */}
-                            {errors.password && <span className='text-red-600'>This field is required</span>}
+                            {errors.password && <span className='text-red-600 text-xs'>This field is required</span>}
                         </div>
                     </div>
 
                     <div>
                         <button
                             type='submit'
-                            className='bg-rose-500 w-full rounded-md py-3 text-white'
+                            className='bg-rose-500 w-full rounded-md py-3 text-white cursor-pointer'
                         >
                             Continue
                         </button>

@@ -53,6 +53,7 @@ const AuthProvider = ({ children }) => {
         await axios.get(`http://localhost:5000/logout`, {
             withCredentials: true
         })
+        setLoading(false)
         return signOut(auth)
     };
 
@@ -92,7 +93,6 @@ const AuthProvider = ({ children }) => {
     const authInfo = {
         user,
         loading,
-        setLoading,
         createUser,
         signIn,
         signInWithGoogle,

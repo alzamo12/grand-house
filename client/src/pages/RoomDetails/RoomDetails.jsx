@@ -2,9 +2,9 @@ import Container from '../../components/shared/Container/Container'
 import RoomReservation from '../../components/RoomDetails/RoomReservation'
 import Heading from '../../components/shared/Heading/Heading'
 import { useParams } from 'react-router'
-import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import useAxiosSecure from '../../hooks/useAxiosSecure'
+import LoadingSpinner from '../../components/shared/LoadingSpinner/LoadingSpinner'
 
 // single room object (Fake Data)
 const room = {
@@ -29,30 +29,24 @@ const room = {
 }
 const RoomDetails = () => {
 
-    const [data, setData] = useState([]);
     const params = useParams();
     const axiosSecure = useAxiosSecure();
 
-    const {data:roomData = []} = useQuery({
-        queryKey: ['roomData'],
-        queryFn: async() => {
+    const { data: roomData = [], isLoading } = useQuery({
+        queryKey: ['roomData', params],
+        queryFn: async () => {
             const res = await axiosSecure.get(`http://localhost:5000/rooms/${params.id}`);
             return res.data
         }
     })
 
-    // useEffect( () => {
-    //     fetch(`http://localhost:5000/rooms/${params.id}`)
-    //     .then(res => res.json())
-    //     .then(data => setData(data))
-    // },[])
-
-    // const roomData = data.filter(index => index._id === params.id)[0];
-    // console.log(roomData)
+    if (isLoading) return <LoadingSpinner />
 
     return (
         <Container>
-            {room && (
+            <link rel="icon" type="image/svg+xml" href="../../../public/favicon.png" />
+            <title>Grand House &nbsp;| |&nbsp; Room Details</title>
+            {roomData && (
                 <div className='max-w-screen-lg mx-auto'>
                     {/* Header */}
                     <div className='flex flex-col gap-6'>
