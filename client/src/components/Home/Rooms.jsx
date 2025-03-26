@@ -2,8 +2,22 @@ import LoadingSpinner from '../shared/LoadingSpinner/LoadingSpinner';
 import Container from '../shared/Container/Container';
 import Heading from '../shared/Heading/Heading';
 import Card from './Card';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
+import { useLocation } from 'react-router';
+import { useQuery } from '@tanstack/react-query';
 
-const Rooms = ({rooms, isLoading}) => {
+const Rooms = () => {
+  const axiosSecure = useAxiosSecure();
+  const location = useLocation();
+
+  // get data of all the rooms base on categories
+  const { data: rooms = [], isLoading } = useQuery({
+      queryKey: ['room', location.search],
+      queryFn: async () => {
+          const res = await axiosSecure.get(`/rooms${location.search}`);
+          return res.data
+      }
+  });
 
   // show spinner if data is loading 
   if (isLoading) {
