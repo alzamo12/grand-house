@@ -21,11 +21,7 @@ const Login = () => {
     signIn(data.email, data.password)
       .then(() => {
         navigate('/')
-        Swal.fire({
-          title: "You've Login Successfully to your account",
-          icon: "success",
-          draggable: true
-        });
+        toast.success("You've login Successfully")
       })
       .catch(error => {
         setLoading(false)
@@ -38,6 +34,8 @@ const Login = () => {
     signInWithGoogle()
       .then(result => {
         console.log(result.user)
+        navigate("/")
+        toast.success("You've login Successfully")
       })
       .catch(error => {
         setLoading(false)

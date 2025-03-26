@@ -53,6 +53,7 @@ const Navbar = () => {
                                             alt='profile'
                                             height='30'
                                             width='30'
+                                            loading='eager'
                                         />
                                     </div>
                                 </div>

@@ -135,8 +135,10 @@ async function run() {
 
         // get all rooms from db
         app.get('/rooms', async (req, res) => {
-            const {category} = req.query;
-            const rooms = await roomCollection.find(category ? {category} : {}).toArray();
+            const { category } = req.query;
+            const query = { category };
+            if (!category || category === "null") delete query.category;
+            const rooms = await roomCollection.find(query).toArray();
             res.send(rooms)
         })
 

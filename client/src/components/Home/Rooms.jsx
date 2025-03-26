@@ -3,23 +3,21 @@ import Container from '../shared/Container/Container';
 import Heading from '../shared/Heading/Heading';
 import Card from './Card';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
-import { useLocation, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
 const Rooms = () => {
   const axiosSecure = useAxiosSecure();
-  const location = useLocation();
   const [params, setParams] = useSearchParams();
   const category = params.get("category");
-  console.log(category)
 
   // get data of all the rooms base on categories
   const { data: rooms = [], isLoading } = useQuery({
-      queryKey: ['room', location.search],
-      queryFn: async () => {
-          const res = await axiosSecure.get(`/rooms${location.search}`);
-          return res.data
-      }
+    queryKey: ['room', location.search],
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/rooms?category=${category}`);
+      return res.data
+    }
   });
 
   // show spinner if data is loading 

@@ -38,19 +38,15 @@ const SignUp = () => {
 
                             // step-2: perform task if user saved successfully
                             if (res.data.insertedId) {
+                                toast.success("Welcome to Grand House")
                                 navigate('/')
-                                Swal.fire({
-                                    title: "You have log in successfully",
-                                    icon: "success",
-                                    draggable: true
-                                });
 
                                 // step-3: send custom verification email
                                 const res = await axiosSecure.post('/send-verification-email', user)
                                 if (res.status === 200) {
                                     Swal.fire({
-                                        title: "Please Verify Your Email",
-                                        text: "You won't be able reserve anything without verifying your email address",
+                                        title: "Verification email has sent to your account",
+                                        text: "You won't be able to reserve anything without verifying your email address",
                                         icon: "warning",
                                         showCancelButton: true,
                                         confirmButtonColor: "#3085d6",
@@ -58,7 +54,8 @@ const SignUp = () => {
                                         confirmButtonText: "Go to Gmail"
                                     }).then((result) => {
                                         if (result.isConfirmed) {
-                                            window.location.href = "https://mail.google.com/"
+                                            // window.location.href = "https://mail.google.com/"
+                                            window.open("https://mail.google.com/", "_blank");
                                         }
                                     });
                                 }
@@ -129,11 +126,7 @@ const SignUp = () => {
         signInWithGoogle()
             .then(() => {
                 navigate('/')
-                Swal.fire({
-                    title: "You have log in successfully",
-                    icon: "success",
-                    draggable: true
-                });
+                toast.success("You've login Successfully")
             })
             .catch(error => {
                 setLoading(false)
@@ -147,11 +140,7 @@ const SignUp = () => {
         createGuestAccount()
             .then(() => {
                 navigate('/')
-                Swal.fire({
-                    title: "You have log in successfully",
-                    icon: "success",
-                    draggable: true
-                });
+                toast.success("You've login Successfully")
             })
             .catch(error => {
                 setLoading(false)
