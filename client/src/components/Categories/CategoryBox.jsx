@@ -6,11 +6,15 @@ const CategoryBox = ({ label, icon: Icon }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    let currentQuery = {category: label};
+    // 1. create queryString
+    let currentQuery = { category: label };
     const url = queryString.stringifyUrl({
       url: '/',
       query: currentQuery
     });
+    // url ---> /?category=label
+
+    // 2. set queryString in URL
     navigate(url)
   }
 

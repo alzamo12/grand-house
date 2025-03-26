@@ -3,12 +3,15 @@ import Container from '../shared/Container/Container';
 import Heading from '../shared/Heading/Heading';
 import Card from './Card';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
-import { useLocation } from 'react-router';
+import { useLocation, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
 const Rooms = () => {
   const axiosSecure = useAxiosSecure();
   const location = useLocation();
+  const [params, setParams] = useSearchParams();
+  const category = params.get("category");
+  console.log(category)
 
   // get data of all the rooms base on categories
   const { data: rooms = [], isLoading } = useQuery({
