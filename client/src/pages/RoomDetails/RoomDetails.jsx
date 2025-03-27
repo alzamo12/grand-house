@@ -5,6 +5,9 @@ import { useParams } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
 import useAxiosSecure from '../../hooks/useAxiosSecure'
 import LoadingSpinner from '../../components/shared/LoadingSpinner/LoadingSpinner'
+import 'react-date-range/dist/styles.css';  // Main style file
+import 'react-date-range/dist/theme/default.css'; // Theme styles
+
 
 // single room object (Fake Data)
 const room = {
@@ -31,6 +34,7 @@ const RoomDetails = () => {
 
     const params = useParams();
     const axiosSecure = useAxiosSecure();
+  
 
     const { data: roomData = [], isLoading } = useQuery({
         queryKey: ['roomData', params],
@@ -46,6 +50,7 @@ const RoomDetails = () => {
         <Container>
             <link rel="icon" type="image/svg+xml" href="../../../public/favicon.png" />
             <title>Grand House &nbsp;| |&nbsp; Room Details</title>
+
             {roomData && (
                 <div className='max-w-screen-lg mx-auto'>
                     {/* Header */}
@@ -112,6 +117,7 @@ const RoomDetails = () => {
                         </div>
 
                         <div className='md:col-span-3 order-first md:order-last mb-10'>
+                        
                             {/* RoomReservation */}
                             <RoomReservation room={roomData} />
                         </div>

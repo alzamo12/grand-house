@@ -5,6 +5,7 @@ import Main from "../layouts/Main";
 import RoomDetails from "../pages/RoomDetails/RoomDetails";
 import Login from "../pages/Login/Login";
 import SignUp from "../pages/SignUp/SignUp";
+import Dashboard from "../layouts/Dashboard";
 
 const Routers = () => {
     return (
@@ -12,6 +13,9 @@ const Routers = () => {
             <Route path="/" element={<Main />}>
                 <Route path="/" element={<Home />}></Route>
                 <Route path="/room/:id" element={<RoomDetails />}></Route>
+            </Route>
+            <Route path="/dashboard" element={<Dashboard/>}>
+               
             </Route>
 
             <Route path="/login" element={<Login />}></Route>
