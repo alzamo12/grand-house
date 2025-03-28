@@ -3,10 +3,12 @@ import { FaGoogle, FaUser } from 'react-icons/fa';
 import { useForm } from "react-hook-form"
 import useAuth from '../../hooks/useAuth';
 import useAxiosSecure from '../../hooks/useAxiosSecure'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2'
 import toast, { Toaster } from 'react-hot-toast';
 import { ImSpinner10 } from 'react-icons/im';
+import axios from 'axios';
+import { app } from '../../firebase/firebase.config';
 
 const SignUp = () => {
 
@@ -20,11 +22,13 @@ const SignUp = () => {
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
 
+
     const onSubmit = async (data) => {
+        const imageURL = await generateImageURL(imageUrl);
         createUser(data.email, data.password)
             .then(() => {
                 // update user with name and image generated from image bb
-                updateUserProfile(data.name, imageUrl)
+                updateUserProfile(data.name, imageURL)
                     .then(async () => {
                         try {
                             // step-1: save user in database with valid information
@@ -76,51 +80,43 @@ const SignUp = () => {
     };
 
     const generateImageURL = (file) => {
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-            // The result is a data URL; we remove the prefix to get the pure base64 string
-            const base64String = reader.result.replace(/^data:image\/[a-z]+;base64,/, "");
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+                // Prepare form data
+                const formData = new FormData();
+                formData.append("image", file);
 
-            // Prepare form data
-            const formData = new FormData();
-            formData.append("image", base64String);
+                // imagebb api key
+                const apiKey = import.meta.env.VITE_imagebb_key;
+                try {
+                    const res = await axios.post(`https://api.imgbb.com/1/upload?key=${apiKey}`, formData);
 
-            // imagebb api key
-            const apiKey = import.meta.env.VITE_imagebb_key;
-            try {
-                const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-                    method: "POST",
-                    body: formData,
-                });
+                    if (!res.data.success) {
+                        return reject("upload failed: " + JSON.stringify(res.data))
+                    }
 
-                const data = await response.json();
-                if (!response.ok) {
-                    console.error("Upload failed:", data);
-                    return;
+                    // The URL of the uploaded image can be found at data.data.url
+                    const imagebb = res.data.data.url;
+                    console.log(imagebb)
+                    return resolve(imagebb)
+                    // You can now use imageUrl as your user's photo URL
+                } catch (error) {
+                    reject("Error uploading image: " + error)
                 }
-
-                // The URL of the uploaded image can be found at data.data.url
-                const imagebb = data.data.url;
-                setImageUrl(imagebb)
-                // You can now use imageUrl as your user's photo URL
-            } catch (error) {
-                console.error("Error uploading image:", error);
+            };
+            reader.onerror = () => {
+                reject("Error reading file: " + reader.error);
             }
-        };
-        reader.readAsDataURL(file);
-    }
+            reader.readAsDataURL(file);
+        })
+    };
 
     // transfer file to image url via image bb
     const handleImage = (e) => {
-        try {
-            const file = e.target.files[0];
-            // console.log(file)
-            generateImageURL(file)
-        }
-        catch (error) {
-            console.log(error)
-        }
-    }
+        const file = e.target.files[0];
+        setImageUrl(file)
+    };
 
     const handleSocialLogin = () => {
         signInWithGoogle()
@@ -194,8 +190,9 @@ const SignUp = () => {
                             <input
                                 {...register("file", { required: true })}
                                 type='file'
+                                // ref={register}
                                 id='image'
-                                name='image'
+                                // name='image'
                                 onChange={handleImage}
                                 // onChange={handleFileChange}
                                 accept='image/*'

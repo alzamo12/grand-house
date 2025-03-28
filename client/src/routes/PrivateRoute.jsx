@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import useAuth from '../hooks/useAuth'
-import { Navigate, useLocation } from 'react-router-dom'
+import { Navigate, useLocation } from "react-router"
 import LoadingSpinner from '../components/shared/LoadingSpinner/LoadingSpinner'
 
 const PrivateRoute = ({ children }) => {
