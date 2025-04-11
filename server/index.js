@@ -143,12 +143,13 @@ async function run() {
         })
 
         // save a room data in db
-        app.post("/room", async(req, res) => {
+        app.post("/room", async (req, res) => {
             const roomData = req.body;
             const result = await roomCollection.insertOne(roomData);
             // console.log(result)
             res.send(result)
         })
+
 
         // get single room 
         app.get('/room/:id', verifyToken, async (req, res) => {
@@ -156,6 +157,14 @@ async function run() {
             const query = { _id: new ObjectId(id) };
             const room = await roomCollection.findOne(query);
             res.send(room)
+        })
+
+        // get user myListings rooms
+        app.get("/my-listings/:email", async (req, res) => {
+            const {email} = req.params;
+            const query = {"host.email": email};
+            const result = await roomCollection.find(query).toArray();
+            res.send(result)
         })
 
 

@@ -44,8 +44,8 @@ const AddRoom = () => {
             const location = e.target.location.value;
             const category = e.target.category.value;
             const title = e.target.title.value;
-            const to = '';
-            const from = '';
+            const to = dates[0].endDate;
+            const from = dates[0].startDate;
             const image = e.target.image.files[0];
             const price = e.target.price.value;
             const bedrooms = e.target.bedrooms.value;
