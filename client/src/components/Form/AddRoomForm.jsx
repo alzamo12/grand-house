@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { categories } from '../Categories/CategoriesData'
 import { DateRange } from 'react-date-range';
+import { ImSpinner10 } from 'react-icons/im';
 
 const AddRoomForm = (props) => {
     const { dates,
+        loading,
         handleDates,
         handleSubmit,
         // setImagePreview, 
@@ -208,10 +210,12 @@ const AddRoomForm = (props) => {
                 </div>
 
                 <button
+                    disabled={loading}
                     type='submit'
                     className='w-full cursor-pointer p-3 mt-5 text-center font-medium text-white transition duration-200 rounded shadow-md bg-rose-500'
                 >
-                    Save & Continue
+                    {loading ? <ImSpinner10 className='mx-auto animate-spin' /> : "Save & Continue"}
+
                 </button>
             </form>
         </div>

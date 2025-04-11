@@ -39,7 +39,7 @@ const RoomDetails = () => {
     const { data: roomData = [], isLoading } = useQuery({
         queryKey: ['roomData', params],
         queryFn: async () => {
-            const res = await axiosSecure.get(`http://localhost:5000/rooms/${params.id}`);
+            const res = await axiosSecure.get(`http://localhost:5000/room/${params.id}`);
             return res.data
         }
     })
