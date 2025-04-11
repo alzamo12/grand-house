@@ -1,42 +1,24 @@
-import axios from 'axios';
+import { useState } from 'react';
 import { categories } from '../Categories/CategoriesData'
 import { DateRange } from 'react-date-range';
-import { useState } from 'react';
-const AddRoomForm = () => {
 
-    const [state, setState] = useState([
-        {
-            startDate: new Date(),
-            endDate: null,
-            key: 'selection'
-        }
-    ]);
+const AddRoomForm = (props) => {
+    const { dates,
+        handleDates,
+        handleSubmit,
+        // setImagePreview, 
+        // imagePreview 
+    } = props;
+    const [imagePreview, setImagePreview] = useState("");
+    const [imageText, setImageText] = useState("Upload Image");
 
-    const handleSubmit = async e => {
-        e.preventDefault()
-        const location = e.target.location.value;
-        const category = e.target.category.value;
-        const title = e.target.title.value;
-        const image = e.target.image.files[0];
-        const price = e.target.price.value;
-        const bedrooms = e.target.bedrooms.value;
-        const description = e.target.description.value;
-
-        console.log(image)
-        const formData = new FormData();
-        formData.append("image", image);
-
-        const apiKey = import.meta.env.VITE_imagebb_key;
-        try {
-            const res = await axios.post(`https://api.imgbb.com/1/upload?key=${apiKey}`, formData);
-            const url = res.data.data.display_url;
-
-            const roomInfo = { location, category, title, url, price, bedrooms, description, state };
-            console.log(roomInfo)
-        }
-        catch (error) {
-            console.log(error)
-        }
+    const handleChangeFile = e => {
+        const localURL = URL.createObjectURL(e.target.files[0]);
+        setImagePreview(localURL);
+        const splittedURL = localURL.split('/');
+        const imageId = splittedURL[splittedURL.length - 1];
+        const text = imageId.slice(0, 20);
+        setImageText(text)
     }
 
     return (
@@ -59,7 +41,6 @@ const AddRoomForm = () => {
                                 required
                             />
                         </div>
-
                         {/* category */}
                         <div className='space-y-1 text-sm'>
                             <label htmlFor='category' className='block text-gray-600'>
@@ -84,16 +65,17 @@ const AddRoomForm = () => {
                             </label>
                             {/* Calender */}
                             <DateRange
+                                editableDateInputs={true}
                                 showDateDisplay={false}
                                 minDate={new Date()}
-                                editableDateInputs={false}
-                                onChange={item => setState([item.selection])}
+                                onChange={(item) => handleDates([item.selection])}
                                 moveRangeOnFirstSelection={false}
-                                ranges={state}
+                                ranges={dates}
                                 rangeColors={["#F6536D"]}
                             />
                         </div>
                     </div>
+
                     {/* 2nd row */}
                     <div className='space-y-6'>
                         {/* title */}
@@ -113,21 +95,37 @@ const AddRoomForm = () => {
 
                         {/* image */}
                         <div className=' p-4 bg-white w-full  m-auto rounded-lg'>
-                            <div className='file_upload px-5 py-3 relative border-4 border-dotted border-gray-300 rounded-lg'>
+                            <div className='file_upload flex items-center px-5 py-3 relative border-4 border-dotted border-gray-300 rounded-lg'>
                                 <div className='flex flex-col w-max mx-auto text-center'>
                                     <label>
                                         <input
                                             className='text-sm cursor-pointer w-36 hidden'
                                             type='file'
                                             name='image'
+                                            onChange={handleChangeFile}
                                             id='image'
                                             accept='image/*'
                                             hidden
                                         />
                                         <div className='bg-rose-500 text-white border border-gray-300 rounded font-semibold cursor-pointer p-1 px-3 hover:bg-rose-500'>
-                                            Upload Image
+                                            {imageText}
                                         </div>
                                     </label>
+                                </div>
+
+                                <div>
+                                    {
+                                        imagePreview ?
+                                            <div className="avatar">
+                                                <div className="w-16 rounded">
+                                                    <img
+                                                        src={imagePreview}
+                                                        alt="" />
+                                                </div>
+                                            </div>
+                                            :
+                                            <span></span>
+                                    }
                                 </div>
                             </div>
                         </div>

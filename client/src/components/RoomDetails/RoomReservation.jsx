@@ -7,6 +7,7 @@ const RoomReservation = ({ room }) => {
     const [state, setState] = useState([
         {
             startDate: new Date(),
+            // startDate: new Date(),
             endDate: null,
             key: 'selection'
         }

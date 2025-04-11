@@ -3,12 +3,11 @@ import { FaGoogle, FaUser } from 'react-icons/fa';
 import { useForm } from "react-hook-form"
 import useAuth from '../../hooks/useAuth';
 import useAxiosSecure from '../../hooks/useAxiosSecure'
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Swal from 'sweetalert2'
 import toast, { Toaster } from 'react-hot-toast';
 import { ImSpinner10 } from 'react-icons/im';
 import axios from 'axios';
-import { app } from '../../firebase/firebase.config';
 
 const SignUp = () => {
 
@@ -21,7 +20,6 @@ const SignUp = () => {
     } = useForm();
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
-
 
     const onSubmit = async (data) => {
         const imageURL = await generateImageURL(imageUrl);
@@ -76,7 +74,6 @@ const SignUp = () => {
                 toast.error("Please try again")
                 console.log(error)
             })
-
     };
 
     const generateImageURL = (file) => {
@@ -200,6 +197,7 @@ const SignUp = () => {
                             {/* file error */}
                             {errors.file && <span className='text-red-600 text-xs'>This field is required</span>}
                         </div>
+
                         {/* email input */}
                         <div>
                             <label htmlFor='email' className='block mb-2 text-sm'>
