@@ -55,7 +55,7 @@ const AddRoom = () => {
     }
 
     return (
-        <div>
+        <div className=''>
             <AddRoomForm
                 dates={dates}
                 // imagePreview={imagePreview}

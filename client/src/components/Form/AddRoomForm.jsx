@@ -95,7 +95,7 @@ const AddRoomForm = (props) => {
 
                         {/* image */}
                         <div className=' p-4 bg-white w-full  m-auto rounded-lg'>
-                            <div className='file_upload flex items-center px-5 py-3 relative border-4 border-dotted border-gray-300 rounded-lg'>
+                            <div className='file_upload justify-between  flex items-center px-5 py-3 relative border-4 border-dotted border-gray-300 rounded-lg'>
                                 <div className='flex flex-col w-max mx-auto text-center'>
                                     <label>
                                         <input
@@ -117,7 +117,7 @@ const AddRoomForm = (props) => {
                                     {
                                         imagePreview ?
                                             <div className="avatar">
-                                                <div className="w-16 rounded">
+                                                <div className="w-10 md:w-14 rounded">
                                                     <img
                                                         src={imagePreview}
                                                         alt="" />
