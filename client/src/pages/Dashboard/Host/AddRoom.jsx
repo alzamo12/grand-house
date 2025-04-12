@@ -15,7 +15,7 @@ const AddRoom = () => {
     const [dates, setDates] = useState([
         {
             startDate: new Date(),
-            endDate: null,
+            endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
             key: 'selection'
         }
     ]);

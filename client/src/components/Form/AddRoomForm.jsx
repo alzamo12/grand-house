@@ -71,7 +71,7 @@ const AddRoomForm = (props) => {
                                 showDateDisplay={false}
                                 minDate={new Date()}
                                 onChange={(item) => handleDates([item.selection])}
-                                moveRangeOnFirstSelection={false}
+                                moveRangeOnFirstSelection={true}
                                 ranges={dates}
                                 rangeColors={["#F6536D"]}
                             />
