@@ -9,7 +9,7 @@ const MyListings = () => {
     const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
 
-    const { data: rooms = [], isLoading } = useQuery({
+    const { data: rooms = [], isLoading, refetch } = useQuery({
         queryKey: ["my-listing"],
         queryFn: async () => {
             const { data } = await axiosSecure.get(`/my-listings/${user.email}`)
@@ -75,7 +75,7 @@ const MyListings = () => {
                                 </thead>
                                 <tbody>
                                     {/* Room row data */}
-                                    {rooms.map(room => <RoomDataRow key={room._id} room={room}></RoomDataRow>)}
+                                    {rooms.map(room => <RoomDataRow key={room._id} room={room} refetch={refetch}></RoomDataRow>)}
                                 </tbody>
                             </table>
                         </div>

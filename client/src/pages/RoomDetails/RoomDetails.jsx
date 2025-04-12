@@ -44,6 +44,8 @@ const RoomDetails = () => {
         }
     })
 
+    console.log(roomData)
+
     if (isLoading) return <LoadingSpinner />
 
     return (
