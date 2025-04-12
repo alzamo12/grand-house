@@ -1,8 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth"
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import RoomDataRow from "../../../components/TableRows/RoomDataRow";
 import LoadingSpinner from "../../../components/shared/LoadingSpinner/LoadingSpinner";
+import { toast } from "react-hot-toast";
 
 
 const MyListings = () => {
@@ -15,7 +16,28 @@ const MyListings = () => {
             const { data } = await axiosSecure.get(`/my-listings/${user.email}`)
             return data
         }
+    });
+
+    // delete a room
+    const { mutateAsync } = useMutation({
+        mutationFn: async (id) => {
+            const { data } = await axiosSecure.delete(`/my-listing/${id}`);
+            return data
+        },
+        onSuccess: (data) => {
+            toast.success("Deleted Successfully")
+            refetch()
+            console.log(data)
+        },
+        onError: (error) => {
+            console.error(error)
+        }
     })
+
+    const handleDelete = async (id) => {
+        console.log(id)
+        await mutateAsync(id)
+    }
 
     if (isLoading) return <LoadingSpinner />
     return (
@@ -75,7 +97,8 @@ const MyListings = () => {
                                 </thead>
                                 <tbody>
                                     {/* Room row data */}
-                                    {rooms.map(room => <RoomDataRow key={room._id} room={room} refetch={refetch}></RoomDataRow>)}
+                                    {rooms.map(room => <RoomDataRow key={room._id} room={room}
+                                        handleDelete={handleDelete}></RoomDataRow>)}
                                 </tbody>
                             </table>
                         </div>
