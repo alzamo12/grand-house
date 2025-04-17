@@ -34,9 +34,9 @@ const SignUp = () => {
                                 name: data.name,
                                 email: data.email,
                                 password: data.password,
-                                role: "Guest"
+                                role: "Guest",
                             };
-                            const res = await axiosSecure.post('/users', user);
+                            const res = await axiosSecure.put('/user', user);
 
                             // step-2: perform task if user saved successfully
                             if (res.data.insertedId) {

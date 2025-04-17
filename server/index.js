@@ -3,7 +3,7 @@ const app = express();
 require("dotenv").config();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb')
+const { MongoClient, ServerApiVersion, ObjectId, Timestamp } = require('mongodb')
 const jwt = require("jsonwebtoken");
 const admin = require('firebase-admin');
 const nodemailer = require('nodemailer');
@@ -103,15 +103,16 @@ async function run() {
         // verify email
         app.post("/send-verification-email", async (req, res) => {
             try {
+                //Step-1: generate verification email
                 const email = req.body.email;
                 const actionCodeSettings = {
                     url: `http://localhost:5173/`,
                     handleCodeInApp: true,
                 };
 
-                // generate verification email
                 const verificationLink = await admin.auth().generateEmailVerificationLink(email, actionCodeSettings);
 
+                // Step-2: create mail
                 const mailOptions = {
                     from: 'rafiqulislam4969@gmail.com',
                     to: email,
@@ -122,6 +123,7 @@ async function run() {
                         `,
                 };
 
+                // step-3: send mail
                 await transporter.sendMail(mailOptions);
 
                 res.status(200).send('Verification email sent');
@@ -131,7 +133,7 @@ async function run() {
             }
         })
 
-        // rooms api
+        // 1. RoomCollection: rooms api
 
         // get all rooms from db
         app.get('/rooms', async (req, res) => {
@@ -150,7 +152,6 @@ async function run() {
             res.send(result)
         })
 
-
         // get single room 
         app.get('/room/:id', verifyToken, async (req, res) => {
             const id = req.params.id;
@@ -159,27 +160,46 @@ async function run() {
             res.send(room)
         })
 
+
+
         // get user myListings rooms
         app.get("/my-listings/:email", async (req, res) => {
-            const {email} = req.params;
-            const query = {"host.email": email};
+            const { email } = req.params;
+            const query = { "host.email": email };
             const result = await roomCollection.find(query).toArray();
             res.send(result)
         })
 
-        app.delete("/my-listing/:id", async(req, res) => {
-            const {id} = req.params;
-            const query = {_id: new ObjectId(id)};
+        app.delete("/my-listing/:id", async (req, res) => {
+            const { id } = req.params;
+            const query = { _id: new ObjectId(id) };
             const result = await roomCollection.deleteOne(query);
             res.send(result)
         })
 
 
+
+        // 2. UserCollection: users api
+
         // user related API
-        app.post('/users', async (req, res) => {
+        app.put('/user', async (req, res) => {
             const user = req.body;
+            const options = { upsert: true };
+            const query = { email: user?.email };
+            const updateDoc = {
+                $set: {
+                    ...user,
+                    timesTamp: Date.now()
+                }
+            }
             // console.log(user)
-            const result = await userCollection.insertOne(user);
+            // const result = await userCollection.insertOne(user);
+            const result = await userCollection.updateOne(query, updateDoc, options);
+            res.send(result)
+        })
+
+        app.get("/users", verifyToken, async (req, res) => {
+            const result = await userCollection.find().toArray();
             res.send(result)
         })
 
