@@ -9,8 +9,6 @@ import { toast } from "react-hot-toast";
 const AddRoom = () => {
     const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
-    // const [loading, setLoading] = useState(false);
-    // console.log(imagePreview)
 
     const [dates, setDates] = useState([
         {
@@ -21,7 +19,6 @@ const AddRoom = () => {
     ]);
 
     const handleDates = item => {
-        console.log(item)
         setDates(item)
     };
 
@@ -31,7 +28,6 @@ const AddRoom = () => {
             return data
         },
         onSuccess: (data) => {
-            // setLoading(false)
             toast.success("Successful on uploading room data")
             console.log(data)
         }

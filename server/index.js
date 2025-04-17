@@ -184,8 +184,22 @@ async function run() {
         // user related API
         app.put('/user', async (req, res) => {
             const user = req.body;
-            const options = { upsert: true };
             const query = { email: user?.email };
+
+            const isExist = await userCollection.findOne(query);
+
+            if (isExist) {
+                const status = "Requested"
+                if (user.status === status) {
+                    const result = await userCollection.updateOne(query, { $set: { status: user.status } });
+                    return res.send(result)
+                }
+                else {
+                    return res.send(isExist)
+                }
+            }
+
+            const options = { upsert: true };
             const updateDoc = {
                 $set: {
                     ...user,

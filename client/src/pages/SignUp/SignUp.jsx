@@ -30,16 +30,9 @@ const SignUp = () => {
                     .then(async () => {
                         try {
                             // step-1: save user in database with valid information
-                            const user = {
-                                name: data.name,
-                                email: data.email,
-                                password: data.password,
-                                role: "Guest",
-                            };
-                            const res = await axiosSecure.put('/user', user);
+                            const user = { email: data.email };
 
                             // step-2: perform task if user saved successfully
-                            if (res.data.insertedId) {
                                 toast.success("Welcome to Grand House")
                                 navigate('/')
 
@@ -61,7 +54,7 @@ const SignUp = () => {
                                         }
                                     });
                                 }
-                            }
+                            
                         }
                         catch (error) {
                             console.log(error)

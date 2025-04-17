@@ -73,6 +73,17 @@ const AuthProvider = ({ children }) => {
             { withCredentials: true }
         )
         return data
+    };
+
+    // save the user
+    const saveUser = async(user) => {
+        const userInfo = {
+            email: user.email,
+            role: "Guest",
+            status: "Verified"
+        };
+        const res = await axios.put(`${import.meta.env.VITE_API_URL}/user`, userInfo);
+       console.log(res.data)
     }
 
     useEffect(() => {
@@ -81,6 +92,7 @@ const AuthProvider = ({ children }) => {
             console.log(currentUser)
             if (currentUser) {
                 getToken(currentUser.email)
+                saveUser(currentUser)
             }
             setLoading(false)
         });
@@ -88,7 +100,7 @@ const AuthProvider = ({ children }) => {
         return () => {
             return unsubscribe()
         }
-    }, [])
+    }, [saveUser])
 
     const authInfo = {
         user,

@@ -4,10 +4,45 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import avatarImg from '../../../assets/images/placeholder.jpg'
 import useAuth from '../../../hooks/useAuth'
+import HostRequestModal from '../../Modal/HostRequestModal'
+import { useMutation } from '@tanstack/react-query';
+import useAxiosSecure from '../../../hooks/useAxiosSecure'
+import toast from 'react-hot-toast'
 
 const Navbar = () => {
     const { user, logOut } = useAuth();
-    const [isOpen, setIsOpen] = useState(false)
+    const [isOpen, setIsOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const axiosSecure = useAxiosSecure();
+
+    const { mutateAsync, isPending } = useMutation({
+        mutationFn: async (user) => {
+            const { data } = await axiosSecure.put("/user", user);
+            return data
+        },
+        onSuccess: (data) => {
+            if (data.modifiedCount) {
+                toast.success("Success! Please wait for Admin approval")
+            }else{
+                toast.success("Success! Please wait once more")
+            }
+        },
+        onError: (error) => {
+            toast.error(error.message)
+        }
+    })
+
+    const closeModal = () => setIsModalOpen(false);
+
+    const modalHandler = async () => {
+        const userInfo = {
+            email: user.email,
+            role: "Guest",
+            status: "Requested"
+        };
+        closeModal()
+        await mutateAsync(userInfo)
+    }
 
     return (
         <div className='sticky top-0 max-w-[2000px] bg-white z-10 shadow-sm'>
@@ -29,15 +64,17 @@ const Navbar = () => {
                             <div className='flex flex-row items-center gap-3'>
                                 {/* Become A Host btn */}
                                 <div className='hidden md:block'>
-                                    {!user && (
+                                    {user && (
                                         <button
-                                            disabled={!user}
+                                            onClick={() => setIsModalOpen(true)}
+                                            disabled={isPending}
                                             className='disabled:cursor-not-allowed cursor-pointer hover:bg-neutral-100 py-3 px-4 text-sm font-semibold rounded-full  transition'
                                         >
                                             Host your home
                                         </button>
                                     )}
                                 </div>
+                                <HostRequestModal modalHandler={modalHandler} closeModal={closeModal} isOpen={isModalOpen}></HostRequestModal>
                                 {/* Dropdown btn */}
                                 <div
                                     onClick={() => setIsOpen(!isOpen)}
