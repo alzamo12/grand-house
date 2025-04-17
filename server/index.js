@@ -167,6 +167,13 @@ async function run() {
             res.send(result)
         })
 
+        app.delete("/my-listing/:id", async(req, res) => {
+            const {id} = req.params;
+            const query = {_id: new ObjectId(id)};
+            const result = await roomCollection.deleteOne(query);
+            res.send(result)
+        })
+
 
         // user related API
         app.post('/users', async (req, res) => {
